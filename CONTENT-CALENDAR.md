@@ -7,7 +7,7 @@ wins vacation-rental bookings. Warm first-person host voice ("we," "your hosts")
 | # | Status | Working title | Target intent / keyword |
 |---|--------|---------------|--------------------------|
 | 1 | ✅ Published | Fall color in the Northwoods: when & where to leaf-peep near Eagle River | "Eagle River fall color", "Wisconsin Northwoods fall colors" |
-| 2 | ⬜ Next | A first-timer's guide to snowmobiling in Eagle River (the Derby, trails, rentals) | "snowmobiling eagle river", "snowmobile capital of the world" |
+| 2 | ✅ Published | A first-timer's guide to snowmobiling in Eagle River (the Derby, trails, rentals) | "snowmobiling eagle river", "snowmobile capital of the world" |
 | 3 | ⬜ | Ice fishing on the Eagle River Chain: a beginner's guide | "ice fishing eagle river wisconsin" |
 | 4 | ⬜ | The best swimming & paddling spots on Lake Arbutus and the chain | "lake arbutus swimming", "kayaking eagle river" |
 | 5 | ⬜ | Supper clubs & Friday fish fries: a Northwoods food primer | "supper club eagle river", "friday fish fry northwoods" |
