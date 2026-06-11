@@ -6,4 +6,6 @@
   <url><loc>https://www.thepineanddandy.com/area-guide.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.thepineanddandy.com/dining.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.thepineanddandy.com/fishing.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.thepineanddandy.com/journal/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.thepineanddandy.com/journal/northwoods-fall-color-guide.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>
