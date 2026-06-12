@@ -20,4 +20,4 @@ Allow: /
 User-agent: meta-externalagent
 Allow: /
 
-Sitemap: https://www.thepineanddandy.com/sitemap.xml
+Sitemap: https://thepineanddandy.com/sitemap.xml
