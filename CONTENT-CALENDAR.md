@@ -11,7 +11,7 @@ wins vacation-rental bookings. Warm first-person host voice ("we," "your hosts")
 | 3 | ✅ Published | Ice fishing on the Eagle River Chain: a beginner's guide | "ice fishing eagle river wisconsin" |
 | 4 | ✅ Published | The best swimming & paddling spots on Lake Arbutus and the chain | "lake arbutus swimming", "kayaking eagle river" |
 | 5 | ✅ Published | Supper clubs & Friday fish fries: a Northwoods food primer | "supper club eagle river", "friday fish fry northwoods" |
-| 6 | ⬜ | Musky fishing 101 on the world's largest chain of lakes | "musky fishing eagle river", "eagle river chain fishing" |
+| 6 | ✅ Published | Musky fishing 101 on the world's largest chain of lakes | "musky fishing eagle river", "eagle river chain fishing" |
 | 7 | ⬜ | Rainy-day activities near Eagle River for families | "things to do eagle river rain", "eagle river with kids" |
 | 8 | ⬜ | An Eagle River events calendar: what's on through the year | "eagle river events", "eagle river wi things to do" |
 | 9 | ⬜ | Packing for a Northwoods cabin trip, by season | "what to pack cabin trip wisconsin" |
