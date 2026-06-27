@@ -5,6 +5,32 @@ published live (GitHub Ethan-Tyler-Brooks/PineAndDandy → Netlify,
 https://www.thepineanddandy.com/journal/). Work in the sandbox shell; the Cowork mount
 cannot run git.
 
+## Direct git push — for any chat, not just the scheduled run
+
+Any Cowork chat can push changes to this repo (manual edits, fixes, one-offs), not only the
+autopublish task. The catch that trips chats up: **git cannot run on the Cowork mount**
+(`~/Cowork/...` — file-lock limitation), so never `cd ~/Cowork/... && git push`. Do all git
+work in the sandbox shell (`mcp__workspace__bash`): clone into `/tmp` (never the mount) and
+push with a tokened URL. Bash calls are independent (no cwd/variable carryover), so run the
+sequence in one call or re-establish state each call. **Never echo the token** — mask it with
+`sed "s/${TOKEN}/***/g"`.
+
+```bash
+TOKEN=$(cat /sessions/*/mnt/Cowork/.rcs-publish/gh_token_pinedandy_rmg)
+cd /tmp && rm -rf pnd
+git clone "https://x-access-token:${TOKEN}@github.com/Ethan-Tyler-Brooks/PineAndDandy.git" pnd 2>&1 | sed "s/${TOKEN}/***/g"
+cd /tmp/pnd
+git config user.name "Pine & Dandy Bot" && git config user.email "hello@thepineanddandy.com"
+# ...edit files under /tmp/pnd...
+git add -A
+git commit -m "your message" 2>&1 | sed "s/${TOKEN}/***/g"
+git push "https://x-access-token:${TOKEN}@github.com/Ethan-Tyler-Brooks/PineAndDandy.git" HEAD:main 2>&1 | sed "s/${TOKEN}/***/g"
+```
+
+Netlify auto-deploys `main`; wait ~40s and `web_fetch` the live URL to confirm. If the token
+is rejected or the push is blocked by policy, stop and surface the exact error — don't retry
+blindly, and don't fall back to pushing from the mount.
+
 ## 0. Auth & checkout
 - TOKEN from the Cowork mount: `.rcs-publish/gh_token_pinedandy_rmg`.
 - Clone to the sandbox FS (e.g. /tmp/pnd), NOT the mount:
