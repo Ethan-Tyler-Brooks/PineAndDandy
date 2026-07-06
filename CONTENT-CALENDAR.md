@@ -15,7 +15,7 @@ wins vacation-rental bookings. Warm first-person host voice ("we," "your hosts")
 | 7 | ✅ Published | Rainy-day activities near Eagle River for families | "things to do eagle river rain", "eagle river with kids" |
 | 8 | ✅ Published | An Eagle River events calendar: what's on through the year | "eagle river events", "eagle river wi things to do" |
 | 9 | ✅ Published | Packing for a Northwoods cabin trip, by season | "what to pack cabin trip wisconsin" |
-| 10 | ⬜ | Cross-country skiing & winter trails around Eagle River | "cross country skiing eagle river" |
+| 10 | ✅ Published | Cross-country skiing & winter trails around Eagle River | "cross country skiing eagle river" |
 
 ## Notes
 - 600–900 words, warm and genuinely useful — written like advice from a host, not an ad.
