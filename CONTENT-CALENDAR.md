@@ -18,6 +18,7 @@ wins vacation-rental bookings. Warm first-person host voice ("we," "your hosts")
 | 10 | ✅ Published | Cross-country skiing & winter trails around Eagle River | "cross country skiing eagle river" |
 | 11 | ✅ Published | Hiking near Eagle River: our favorite Northwoods trails | "hiking near eagle river", "eagle river wi hiking trails" |
 | 12 | ✅ Published | ATV & UTV trails around Eagle River: a Northwoods rider's guide | "ATV trails eagle river", "vilas county atv utv trails" |
+| 13 | ✅ Published | Waterfalls & scenic drives near Eagle River: a Northwoods day-trip guide | "waterfalls near eagle river wi", "wisconsin northwoods waterfalls", "scenic drives near eagle river" |
 
 ## Notes
 - 600–900 words, warm and genuinely useful — written like advice from a host, not an ad.
