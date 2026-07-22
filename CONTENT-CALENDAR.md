@@ -20,6 +20,7 @@ wins vacation-rental bookings. Warm first-person host voice ("we," "your hosts")
 | 12 | ✅ Published | ATV & UTV trails around Eagle River: a Northwoods rider's guide | "ATV trails eagle river", "vilas county atv utv trails" |
 | 13 | ✅ Published | Waterfalls & scenic drives near Eagle River: a Northwoods day-trip guide | "waterfalls near eagle river wi", "wisconsin northwoods waterfalls", "scenic drives near eagle river" |
 | 14 | ✅ Published | Stargazing & the northern lights in the Northwoods near Eagle River | "stargazing eagle river", "northern lights wisconsin northwoods", "dark sky eagle river" |
+| 15 | ✅ Published | The perfect Eagle River weekend: a 3-day Northwoods itinerary | "Eagle River weekend getaway", "things to do in Eagle River Wisconsin", "Eagle River itinerary" |
 
 ## Notes
 - 600–900 words, warm and genuinely useful — written like advice from a host, not an ad.
