@@ -22,6 +22,7 @@ wins vacation-rental bookings. Warm first-person host voice ("we," "your hosts")
 | 14 | ✅ Published | Stargazing & the northern lights in the Northwoods near Eagle River | "stargazing eagle river", "northern lights wisconsin northwoods", "dark sky eagle river" |
 | 15 | ✅ Published | The perfect Eagle River weekend: a 3-day Northwoods itinerary | "Eagle River weekend getaway", "things to do in Eagle River Wisconsin", "Eagle River itinerary" |
 | 16 | ✅ Published | Golfing near Eagle River: a Northwoods golf guide | "golf courses eagle river wi", "golfing in the northwoods", "eagle river wisconsin golf" |
+| 17 | ✅ Published | Boating the Eagle River Chain: pontoons, launches, and a first-timer's guide | "eagle river boat rentals", "pontoon rental eagle river wi", "eagle river chain of lakes boating" |
 
 ## Notes
 - 600–900 words, warm and genuinely useful — written like advice from a host, not an ad.
