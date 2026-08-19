@@ -25,6 +25,7 @@ wins vacation-rental bookings. Warm first-person host voice ("we," "your hosts")
 | 17 | ✅ Published | Boating the Eagle River Chain: pontoons, launches, and a first-timer's guide | "eagle river boat rentals", "pontoon rental eagle river wi", "eagle river chain of lakes boating" |
 | 18 | ✅ Published | Biking near Eagle River: paved trails, family rides & Northwoods cycling | "bike trails eagle river wi", "heart of vilas county bike trail", "biking northwoods wisconsin" |
 | 19 | ✅ Published | Wildlife watching near Eagle River: loons, eagles & the Northwoods cast | "wildlife watching eagle river", "loons wisconsin northwoods", "bald eagles eagle river wi" |
+| 20 | ✅ Published | Berry picking & farmers markets near Eagle River: a Northwoods harvest guide | "berry picking eagle river wi", "blueberry picking northwoods wisconsin", "eagle river farmers market" |
 
 ## Notes
 - 600–900 words, warm and genuinely useful — written like advice from a host, not an ad.
