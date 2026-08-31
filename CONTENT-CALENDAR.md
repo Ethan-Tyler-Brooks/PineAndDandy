@@ -31,6 +31,7 @@ wins vacation-rental bookings. Warm first-person host voice ("we," "your hosts")
 | 23 | ✅ Published | Downtown Eagle River: shops, sweets & small-town charm | "downtown eagle river wi", "shopping eagle river", "eagle river wisconsin stores" |
 | 24 | ✅ Published | Snowshoeing near Eagle River: a Northwoods winter trail guide | "snowshoeing eagle river wi", "snowshoe trails northwoods wisconsin", "winter hiking eagle river" |
 | 25 | ✅ Published | Camping near Eagle River: campgrounds, tent sites & a Northwoods camping guide | "camping near eagle river wi", "eagle river wi campgrounds", "northwoods camping" |
+| 26 | ✅ Published | Spring in the Northwoods: ice-out, quiet lakes & what to do near Eagle River in spring | "spring in eagle river wisconsin", "ice out eagle river", "northwoods spring activities" |
 
 ## Notes
 - 600–900 words, warm and genuinely useful — written like advice from a host, not an ad.
