@@ -33,6 +33,7 @@ wins vacation-rental bookings. Warm first-person host voice ("we," "your hosts")
 | 25 | ✅ Published | Camping near Eagle River: campgrounds, tent sites & a Northwoods camping guide | "camping near eagle river wi", "eagle river wi campgrounds", "northwoods camping" |
 | 26 | ✅ Published | Spring in the Northwoods: ice-out, quiet lakes & what to do near Eagle River in spring | "spring in eagle river wisconsin", "ice out eagle river", "northwoods spring activities" |
 | 27 | ✅ Published | Hunting near Eagle River: grouse, deer & a Northwoods fall guide | "hunting near eagle river wi", "grouse hunting northwoods wisconsin", "deer hunting vilas county" |
+| 28 | ✅ Published | Fall fishing near Eagle River: the autumn bite on the Northwoods lakes | "fall fishing eagle river wi", "autumn musky fishing wisconsin", "fall walleye northwoods" |
 
 ## Notes
 - 600–900 words, warm and genuinely useful — written like advice from a host, not an ad.
