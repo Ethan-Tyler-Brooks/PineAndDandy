@@ -39,8 +39,10 @@ blindly, and don't fall back to pushing from the mount.
 - Never print the token; mask with sed. Use the tokened URL only on push.
 
 ## 1. Topic
-- Read CONTENT-CALENDAR.md; take the first `⬜` row. If none, generate a fresh
-  Eagle-River / Northwoods travel topic not already covered.
+- There is no content calendar (retired 2026-09-06). Topic choice comes from this
+  site's Search Console data plus the steer (anchor / prefer / avoid) Ethan keeps on
+  the Four-Site Control page; the scheduled task's prompt is authoritative. Pick an
+  Eagle-River / Northwoods topic not already covered, and in season.
 
 ## 2. Write the post — copy an existing guide page as the template
 Use `journal/northwoods-fall-color-guide.html` (or `area-guide.html`) as the structural
