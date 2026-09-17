@@ -1,0 +1,8 @@
+{
+  "name": "pine-and-dandy-site",
+  "private": true,
+  "description": "Pine & Dandy cabins site + Cabin Ops (tickets, supplies, maintenance, lock batteries)",
+  "dependencies": {
+    "@netlify/blobs": "^9.1.6"
+  }
+}

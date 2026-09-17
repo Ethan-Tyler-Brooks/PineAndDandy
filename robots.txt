@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
 Disallow: /guides/
+Disallow: /ops/
+Disallow: /tickets/
+Disallow: /api/
 
 # Welcome AI crawlers (AI search visibility / citations)
 User-agent: GPTBot

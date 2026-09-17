@@ -1,0 +1,26 @@
+[build]
+  publish = "."
+  command = ""
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Cabin Ops API — served by netlify/functions/ops.mjs
+[[redirects]]
+  from = "/api/ops/*"
+  to = "/.netlify/functions/ops/:splat"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/ops/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/tickets/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
