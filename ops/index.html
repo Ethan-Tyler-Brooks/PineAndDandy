@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Cabin Ops · Pine & Dandy</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f7f0e1;--paper-dim:#efe6d2;--cream:#f4ead4;--ink:#241c12;--ink-soft:#5e503c;--ink-faint:#8a7c66;
+  --pine:#2f4733;--pine-mid:#3a5a40;--pine-deep:#1d2c20;--rust:#b8501f;--rust-deep:#90310f;--amber:#d99a2b;--lake:#5b8a82;--lake-deep:#37635b;
+  --line:rgba(36,28,18,.13);--card:#fffdf8;
+  --ok:#3a7a4a;--ok-bg:#dcebe4;--warn:#9a6a10;--warn-bg:#f4e6c6;--crit:#a1370f;--crit-bg:#f5d9cc;--mute-bg:#e8e1d3;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body{padding:env(safe-area-inset-top,0) 16px calc(48px + env(safe-area-inset-bottom,0))}
+.wrap{max-width:1080px;margin:0 auto}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--ink)}
+input[type=text],input[type=password],input[type=number],input[type=date],select,textarea{padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);outline:none;max-width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--pine-mid);box-shadow:0 0 0 3px rgba(58,90,64,.16)}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:500;margin:0;text-wrap:balance}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--pine-mid);font-weight:700}
+.btn{border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:8px 12px;font-weight:600;min-height:38px;color:var(--ink)}
+.btn.p{background:var(--pine);border-color:var(--pine);color:#fff}
+.btn.r{background:var(--rust);border-color:var(--rust);color:#fff}
+.btn.s{padding:5px 9px;min-height:30px;font-size:13px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--ink-soft)}
+.btn[disabled]{opacity:.5;cursor:default}
+.btn:focus-visible{outline:3px solid rgba(58,90,64,.35);outline-offset:1px}
+/* gate */
+#gate{max-width:420px;margin:12vh auto 0;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:28px 24px}
+#gate h1{font-size:30px;margin:6px 0 4px}
+#gate p{color:var(--ink-soft);margin:0 0 16px}
+#gate input{width:100%;font-size:17px;padding:12px}
+#gate .btn{width:100%;margin-top:12px;min-height:48px}
+.err{color:var(--rust-deep);font-weight:600;min-height:1.4em;margin-top:8px}
+/* header */
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;padding:20px 0 14px}
+header h1{font-size:32px;line-height:1.05}
+header h1 em{font-style:italic;color:var(--rust)}
+.hright{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filter{display:flex;gap:6px;flex-wrap:wrap}
+.filter .chip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:600;font-size:13px;color:var(--ink)}
+.filter .chip[aria-pressed=true]{background:var(--pine);border-color:var(--pine);color:#fff}
+.sync{font-size:12px;color:var(--ink-faint)}
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:6px 0 18px}
+.tile{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 14px 12px;text-align:left;display:flex;flex-direction:column;gap:2px;min-height:96px}
+.tile .n{font-family:Fraunces,Georgia,serif;font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.tile .l{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.tile .d{font-size:13px;color:var(--ink-soft)}
+.tile.crit .n{color:var(--crit)}.tile.warn .n{color:var(--warn)}.tile.ok .n{color:var(--ok)}
+.tile[aria-pressed=true]{border-color:var(--pine);box-shadow:0 0 0 2px rgba(47,71,51,.15)}
+/* tabs */
+nav.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);margin-bottom:18px;overflow-x:auto}
+nav.tabs button{background:none;border:0;padding:10px 14px;font-weight:600;color:var(--ink-soft);border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+nav.tabs button[aria-selected=true]{color:var(--pine-deep);border-bottom-color:var(--rust)}
+nav.tabs .cnt{display:inline-block;min-width:20px;padding:1px 6px;border-radius:999px;background:var(--paper-dim);font-size:12px;margin-left:5px;font-variant-numeric:tabular-nums}
+nav.tabs .cnt.hot{background:var(--rust);color:#fff}
+section.tab[hidden]{display:none}
+h2.sec{font-size:22px;margin:22px 0 10px;display:flex;align-items:baseline;gap:10px}
+h2.sec small{font-family:"Hanken Grotesk",sans-serif;font-size:13px;color:var(--ink-faint);font-weight:500}
+h2.sec:first-child{margin-top:0}
+.empty{color:var(--ink-faint);padding:14px;border:1.5px dashed var(--line);border-radius:12px;text-align:center}
+/* tickets */
+.tlist{display:grid;gap:10px}
+.tc{background:var(--card);border:1.5px solid var(--line);border-left:6px solid var(--amber);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:8px 14px}
+.tc.urgent{border-left-color:var(--rust)}.tc.low{border-left-color:var(--lake)}.tc.done,.tc.dismissed{border-left-color:var(--mute-bg);opacity:.75}
+.tc .head{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.tc .item{font-weight:700;font-size:17px}
+.tc .qty{color:var(--ink-soft)}
+.tc .meta{font-size:13px;color:var(--ink-soft);grid-column:1/-1}
+.tc .notes{grid-column:1/-1;font-size:14px;white-space:pre-wrap;color:var(--ink)}
+.tc .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-self:start}
+.tc .mgr{grid-column:1/-1;display:grid;grid-template-columns:150px 1fr;gap:8px}
+.tc .mgr input{width:100%}
+.tc .photo{grid-column:1/-1}
+.tc .photo img{max-width:100%;max-height:420px;border-radius:8px;display:block}
+.pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:3px 9px;background:var(--mute-bg);color:var(--ink-soft);white-space:nowrap}
+.pill.prop{background:var(--pine-deep);color:#fff}.pill.fl{background:var(--lake-deep);color:#fff}
+.pill.kind{background:var(--paper-dim)}
+.pill.open{background:var(--warn-bg);color:var(--warn)}.pill.ordered,.pill.scheduled{background:var(--ok-bg);color:#255a39}.pill.done{background:var(--pine);color:#fff}
+.pill.crit{background:var(--crit-bg);color:var(--crit)}.pill.warn{background:var(--warn-bg);color:var(--warn)}.pill.ok{background:var(--ok-bg);color:var(--ok)}
+/* tables */
+.tbl{width:100%;border-collapse:collapse;background:var(--card);border:1.5px solid var(--line);border-radius:12px;overflow:hidden}
+.tblwrap{overflow-x:auto;border-radius:12px}
+.tbl th,.tbl td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:middle;font-variant-numeric:tabular-nums}
+.tbl th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);background:var(--paper-dim)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.num{text-align:right}
+.tbl .sub{font-size:12px;color:var(--ink-faint)}
+.pgroup{margin-bottom:22px}
+.pgroup h3{font-size:19px;margin:0 0 8px;display:flex;align-items:center;gap:10px}
+.check{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.check input{width:20px;height:20px}
+.check .i{font-weight:600}.check .m{font-size:13px;color:var(--ink-soft)}
+.inline{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.inline input[type=text]{flex:1;min-width:140px}
+.inline input[type=number]{width:80px}
+/* locks */
+.locks{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.lock{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px}
+.lock .pct{font-family:Fraunces,Georgia,serif;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.lock .bar{height:10px;background:var(--paper-dim);border-radius:999px;overflow:hidden;margin:8px 0}
+.lock .bar i{display:block;height:100%;background:var(--ok)}
+.lock.warn .bar i{background:var(--amber)}.lock.crit .bar i{background:var(--rust)}
+.lock .m{font-size:13px;color:var(--ink-soft)}
+.lock svg{width:100%;height:56px;display:block;margin-top:8px}
+.callout{background:var(--warn-bg);border-radius:12px;padding:12px 14px;color:var(--warn);font-weight:600}
+/* settings */
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h3{font-size:19px;margin:0 0 8px}
+.card p{margin:4px 0 10px;color:var(--ink-soft);font-size:14px}
+.props td input[type=text]{width:100%;min-width:90px}
+.props td input.short{min-width:60px}
+.props td input.uuid{min-width:230px;font-family:ui-monospace,Menlo,monospace;font-size:12px}
+code{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--paper-dim);padding:2px 6px;border-radius:5px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0));transform:translateX(-50%);background:var(--pine-deep);color:#fff;padding:10px 16px;border-radius:10px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+[hidden]{display:none!important}
+@media (max-width:720px){
+  .tiles{grid-template-columns:1fr 1fr}
+  .tc{grid-template-columns:1fr}.tc .acts{justify-content:flex-start}
+  .tc .mgr{grid-template-columns:1fr}
+  header h1{font-size:27px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div id="gate">
+  <div class="eyebrow">Pine &amp; Dandy</div>
+  <h1>Cabin Ops</h1>
+  <p id="gateMsg">Enter the passphrase. This browser will remember it.</p>
+  <input type="password" id="pass" autocomplete="current-password" placeholder="Passphrase">
+  <button class="btn p" id="gateGo">Open</button>
+  <div class="err" id="gateErr"></div>
+</div>
+
+<div id="app" hidden>
+<header>
+  <div>
+    <div class="eyebrow">Pine &amp; Dandy</div>
+    <h1>Cabin <em>Ops</em></h1>
+  </div>
+  <div class="hright">
+    <div class="filter" id="pfilter"></div>
+    <button class="btn s ghost" id="refresh" title="Reload">↻ Refresh</button>
+  </div>
+</header>
+
+<div class="tiles" id="tiles"></div>
+
+<nav class="tabs" id="tabs" role="tablist">
+  <button role="tab" data-t="tickets" aria-selected="true">Tickets <span class="cnt" id="cTickets">0</span></button>
+  <button role="tab" data-t="supplies" aria-selected="false">Supplies <span class="cnt" id="cSupplies">0</span></button>
+  <button role="tab" data-t="maint" aria-selected="false">Maintenance <span class="cnt" id="cMaint">0</span></button>
+  <button role="tab" data-t="locks" aria-selected="false">Locks</button>
+  <button role="tab" data-t="settings" aria-selected="false">Settings</button>
+</nav>
+
+<section class="tab" id="tab-tickets"></section>
+<section class="tab" id="tab-supplies" hidden></section>
+<section class="tab" id="tab-maint" hidden></section>
+<section class="tab" id="tab-locks" hidden></section>
+<section class="tab" id="tab-settings" hidden></section>
+<div class="sync" id="syncNote" style="margin-top:22px"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}},del(k){try{localStorage.removeItem(k)}catch{}}};
+let KEY=ls.get('pd_ops_key',''), S=null, filter=ls.get('pd_ops_filter','all'), tab='tickets', photoCache={};
+const DAY=864e5, today=()=>new Date().toISOString().slice(0,10);
+const days=(a,b)=>Math.round((new Date(b)-new Date(a))/DAY);
+const fmt=(iso)=>iso?new Date(iso.length===10?iso+'T12:00:00':iso).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'—';
+const ago=(iso)=>{const d=Math.floor((Date.now()-new Date(iso))/DAY);return d<=0?'today':d===1?'yesterday':d+'d ago'};
+const esc=(s)=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast=(m)=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),1800)};
+const api=async(p,body,method)=>{
+  const r=await fetch('/api/ops/'+p,{method:method||(body?'POST':'GET'),headers:{'x-ops-key':KEY,...(body?{'content-type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});
+  if(r.status===401){ls.del('pd_ops_key');KEY='';showGate('That passphrase didn\'t work.');throw new Error('unauthorized');}
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Error '+r.status);return j;
+};
+const prop=(id)=>(S.properties.find(p=>p.id===id)||{name:id,short:id,region:'wi'});
+const visible=(pid)=>filter==='all'||pid===filter;
+const norm=(s)=>String(s||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();
+
+// ---------- gate ----------
+function showGate(msg){$('#app').hidden=true;$('#gate').hidden=false;if(msg)$('#gateErr').textContent=msg;}
+async function boot(){
+  const cfg=await fetch('/api/ops/config').then(r=>r.json()).catch(()=>({}));
+  if(cfg.setupNeeded){$('#gateMsg').textContent='First time here. Create the passphrase you and Molly will use (6+ characters).';$('#gateGo').textContent='Create passphrase';$('#gateGo').dataset.setup='1';}
+  if(KEY&&!cfg.setupNeeded){try{await load();return;}catch{}}
+  showGate('');
+}
+$('#gateGo').addEventListener('click',async()=>{
+  const v=$('#pass').value.trim();$('#gateErr').textContent='';
+  try{
+    if($('#gateGo').dataset.setup){await fetch('/api/ops/setup',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({passphrase:v})}).then(async r=>{if(!r.ok)throw new Error((await r.json()).error||'Setup failed')});delete $('#gateGo').dataset.setup;}
+    KEY=v;ls.set('pd_ops_key',v);await load();
+  }catch(e){$('#gateErr').textContent=e.message==='unauthorized'?'That passphrase didn\'t work.':e.message;}
+});
+$('#pass').addEventListener('keydown',e=>{if(e.key==='Enter')$('#gateGo').click()});
+
+// ---------- load + derive ----------
+async function load(){
+  S=await api('state');$('#gate').hidden=true;$('#app').hidden=false;
+  renderFilter();renderAll();
+  $('#syncNote').textContent='Loaded '+new Date(S.now).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+(S.devices.length?' · last lock sync '+fmt(S.devices[S.devices.length-1].date):' · no lock sync yet');
+}
+$('#refresh').addEventListener('click',()=>load().then(()=>toast('Refreshed')));
+function renderFilter(){
+  const el=$('#pfilter');el.innerHTML='';
+  [{id:'all',short:'All'},...S.properties.filter(p=>p.active)].forEach(p=>{const b=document.createElement('button');b.className='chip';b.textContent=p.short;b.dataset.v=p.id;b.setAttribute('aria-pressed',String(p.id===filter));el.appendChild(b)});
+}
+$('#pfilter').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;filter=b.dataset.v;ls.set('pd_ops_filter',filter);renderFilter();renderAll();});
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('[role=tab]');if(!b)return;setTab(b.dataset.t)});
+function setTab(t){tab=t;$$('#tabs [role=tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.t===t)));$$('section.tab').forEach(s=>s.hidden=s.id!=='tab-'+t);$$('#tiles .tile').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.t===t)));}
+
+function maintStatus(m){
+  if(!m.lastDone)return{cls:'',label:'Never logged',due:null,d:null};
+  const due=new Date(new Date(m.lastDone+'T12:00:00').getTime()+m.intervalDays*DAY).toISOString().slice(0,10);
+  const d=days(today(),due);
+  return{due,d,cls:d<0?'crit':d<=14?'warn':'ok',label:d<0?`Overdue ${-d}d`:d===0?'Due today':d<=14?`Due in ${d}d`:'OK'};
+}
+function supplyRhythm(){
+  const map={};
+  S.tickets.filter(t=>t.kind==='supply'&&t.status!=='dismissed').forEach(t=>{
+    const k=t.property+'|'+norm(t.item);(map[k]=map[k]||{property:t.property,item:t.item,dates:[],open:false,qtys:[]});
+    map[k].dates.push(t.createdAt.slice(0,10));if(t.status==='open'||t.status==='ordered')map[k].open=true;if(t.qty)map[k].qtys.push(t.qty);
+  });
+  return Object.values(map).map(r=>{
+    r.dates.sort();const gaps=[];for(let i=1;i<r.dates.length;i++){const g=days(r.dates[i-1],r.dates[i]);if(g>0)gaps.push(g)}
+    r.count=r.dates.length;r.last=r.dates[r.dates.length-1];
+    if(gaps.length){gaps.sort((a,b)=>a-b);r.gap=gaps[Math.floor(gaps.length/2)];r.next=new Date(new Date(r.last+'T12:00:00').getTime()+r.gap*DAY).toISOString().slice(0,10);r.d=days(today(),r.next);}
+    return r;
+  }).sort((a,b)=>(a.d??999)-(b.d??999));
+}
+function latestLocks(){
+  const out={};S.devices.forEach(day=>day.readings.forEach(r=>{const k=r.property+'|'+r.deviceId;(out[k]=out[k]||{...r,hist:[]});Object.assign(out[k],r);out[k].hist.push({date:day.date,pct:r.pct});out[k].date=day.date;}));
+  return Object.values(out);
+}
+
+// ---------- tiles ----------
+function renderTiles(){
+  const T=S.tickets.filter(t=>visible(t.property));
+  const open=T.filter(t=>t.status==='open'),urgent=open.filter(t=>t.urgency==='urgent');
+  const buy=T.filter(t=>t.kind==='supply'&&t.status==='open').length;
+  const M=S.maintenance.filter(m=>visible(m.property)).map(m=>({m,s:maintStatus(m)}));
+  const over=M.filter(x=>x.s.cls==='crit').length,soon=M.filter(x=>x.s.cls==='warn').length,never=M.filter(x=>!x.m.lastDone).length;
+  const locks=latestLocks().filter(l=>visible(l.property)&&l.pct!=null);const low=locks.filter(l=>l.pct<=(l.threshold||30));const minL=locks.length?Math.min(...locks.map(l=>l.pct)):null;
+  const tiles=[
+    {t:'tickets',n:open.length,l:'Open tickets',d:urgent.length?`${urgent.length} urgent`:'nothing urgent',cls:urgent.length?'crit':open.length?'warn':'ok'},
+    {t:'supplies',n:buy,l:'Supplies to buy',d:buy?'on the restock list':'list is clear',cls:buy?'warn':'ok'},
+    {t:'maint',n:over+soon,l:'Maintenance due',d:over?`${over} overdue · ${soon} soon`:soon?`${soon} due within 14d`:never?`${never} never logged yet`:'all current',cls:over?'crit':soon||never?'warn':'ok'},
+    {t:'locks',n:minL==null?'—':minL+'%',l:'Lowest lock battery',d:locks.length?(low.length?`${low.length} below threshold`:'all above threshold'):'no readings yet',cls:low.length?'crit':minL!=null&&minL<45?'warn':'ok'},
+  ];
+  $('#tiles').innerHTML=tiles.map(x=>`<button class="tile ${x.cls}" data-t="${x.t}" aria-pressed="${x.t===tab}"><span class="n">${x.n}</span><span class="l">${x.l}</span><span class="d">${x.d}</span></button>`).join('');
+  $$('#tiles .tile').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.t)));
+  $('#cTickets').textContent=open.length;$('#cTickets').classList.toggle('hot',urgent.length>0);
+  $('#cSupplies').textContent=buy;$('#cMaint').textContent=over+soon;$('#cMaint').classList.toggle('hot',over>0);
+}
+
+// ---------- tickets ----------
+const URG={urgent:0,normal:1,low:2};
+function ticketCard(t){
+  const p=prop(t.property);
+  const acts=t.status==='open'?(t.kind==='supply'?`<button class="btn s p" data-a="ordered">Ordered</button>`:`<button class="btn s p" data-a="scheduled">Scheduled</button>`)+`<button class="btn s" data-a="done">Done</button><button class="btn s ghost" data-a="dismissed">Dismiss</button>`
+    :(t.status==='ordered'||t.status==='scheduled')?`<button class="btn s p" data-a="done">Done</button><button class="btn s ghost" data-a="open">Reopen</button>`
+    :`<button class="btn s ghost" data-a="open">Reopen</button><button class="btn s ghost" data-a="delete">Delete</button>`;
+  return `<div class="tc ${t.urgency} ${t.status}" data-id="${t.id}">
+    <div class="head"><span class="pill prop ${p.region==='fl'?'fl':''}">${esc(p.short)}</span><span class="pill kind">${t.kind==='supply'?'Supplies':'Repair'}</span><span class="pill ${t.status}">${t.status}</span>${t.urgency==='urgent'?'<span class="pill crit">Urgent</span>':''}<span class="item">${esc(t.item)}</span>${t.qty?`<span class="qty">· ${esc(t.qty)}</span>`:''}</div>
+    <div class="acts">${acts}</div>
+    <div class="meta">${esc(t.submittedBy)} · ${ago(t.createdAt)} (${fmt(t.createdAt)})${t.location?' · '+esc(t.location):''}${t.doneAt?' · done '+fmt(t.doneAt):''}${t.photo?` · <button class="btn s ghost" data-a="photo" style="min-height:22px;padding:0 4px">View photo</button>`:''}</div>
+    ${t.notes?`<div class="notes">${esc(t.notes)}</div>`:''}
+    <div class="photo" hidden></div>
+    <div class="mgr"><input type="text" placeholder="Assigned to (Kevin…)" data-f="assignee" value="${esc(t.assignee)}"><input type="text" placeholder="Your note — order #, vendor, when scheduled…" data-f="managerNotes" value="${esc(t.managerNotes)}"></div>
+  </div>`;
+}
+function renderTickets(){
+  const el=$('#tab-tickets');const T=S.tickets.filter(t=>visible(t.property));
+  const sortOpen=(a,b)=>(URG[a.urgency]-URG[b.urgency])||(a.createdAt<b.createdAt?-1:1);
+  const open=T.filter(t=>t.status==='open').sort(sortOpen),prog=T.filter(t=>t.status==='ordered'||t.status==='scheduled').sort(sortOpen),done=T.filter(t=>t.status==='done'||t.status==='dismissed').slice(0,40);
+  const block=(title,list,sub,emptyMsg)=>`<h2 class="sec">${title} <small>${sub}</small></h2>`+(list.length?`<div class="tlist">${list.map(ticketCard).join('')}</div>`:`<div class="empty">${emptyMsg}</div>`);
+  el.innerHTML=block('Needs action',open,open.length+' open','Nothing waiting. Ellie\'s link: <code>thepineanddandy.com/tickets/</code>')+block('In progress',prog,'ordered or scheduled','—')+block('Done',done,'last 40','—');
+  el.onclick=async e=>{
+    const b=e.target.closest('[data-a]');if(!b)return;const card=b.closest('.tc'),id=card.dataset.id,a=b.dataset.a;
+    if(a==='photo'){const box=$('.photo',card);box.hidden=!box.hidden;if(!box.hidden&&!box.innerHTML){box.innerHTML='<span class="sub">Loading…</span>';try{if(!photoCache[id]){const r=await fetch('/api/ops/photo/'+id,{headers:{'x-ops-key':KEY}});photoCache[id]=URL.createObjectURL(await r.blob());}box.innerHTML=`<img src="${photoCache[id]}" alt="Ticket photo">`;}catch{box.textContent='Could not load photo.';}}return;}
+    if(a==='delete'&&!confirm('Delete this ticket for good?'))return;
+    b.disabled=true;
+    try{const r=await api('ticket/'+id,a==='delete'?{delete:true}:{status:a});
+      if(r.deleted)S.tickets=S.tickets.filter(t=>t.id!==id);else S.tickets=S.tickets.map(t=>t.id===id?r.ticket:t);
+      renderAll();toast(a==='delete'?'Deleted':'Marked '+a);
+    }catch(x){b.disabled=false;toast(x.message)}
+  };
+  el.onchange=async e=>{const i=e.target.closest('[data-f]');if(!i)return;const id=i.closest('.tc').dataset.id;try{const r=await api('ticket/'+id,{[i.dataset.f]:i.value});S.tickets=S.tickets.map(t=>t.id===id?r.ticket:t);toast('Saved');}catch(x){toast(x.message)}};
+}
+
+// ---------- supplies ----------
+function renderSupplies(){
+  const el=$('#tab-supplies');
+  const open=S.tickets.filter(t=>t.kind==='supply'&&t.status==='open'&&visible(t.property));
+  const byProp={};open.forEach(t=>(byProp[t.property]=byProp[t.property]||[]).push(t));
+  let html='<h2 class="sec">Restock list <small>check off as you buy — marks the ticket ordered</small></h2>';
+  html+=Object.keys(byProp).length?Object.entries(byProp).map(([pid,list])=>`<div class="pgroup"><h3>${esc(prop(pid).name)} <button class="btn s" data-allord="${pid}">All ordered</button></h3>${list.map(t=>`<label class="check"><input type="checkbox" data-ord="${t.id}"><span class="i">${esc(t.item)}</span><span class="m">${esc(t.qty||'')}${t.urgency==='urgent'?' · <b style="color:var(--crit)">out now</b>':''} · ${ago(t.createdAt)}</span></label>`).join('')}</div>`).join(''):'<div class="empty">Nothing to buy right now.</div>';
+  const R=supplyRhythm().filter(r=>visible(r.property));
+  html+='<h2 class="sec">Usage rhythm <small>median days between requests → predicted next</small></h2>';
+  html+=R.length?`<div class="tblwrap"><table class="tbl"><thead><tr><th>Cabin</th><th>Item</th><th class="num">Requests</th><th>Last</th><th class="num">Every</th><th>Predicted next</th><th>Status</th></tr></thead><tbody>${R.map(r=>{
+    const st=r.open?['warn','Open ticket']:r.d==null?['','Need 2+ requests']:r.d<0?['crit',`Expected ${-r.d}d ago`]:r.d<=7?['warn',`Due in ${r.d}d`]:['ok','OK'];
+    return `<tr><td><span class="pill prop ${prop(r.property).region==='fl'?'fl':''}">${esc(prop(r.property).short)}</span></td><td>${esc(r.item)}${r.qtys.length?`<div class="sub">usually ${esc(r.qtys[r.qtys.length-1])}</div>`:''}</td><td class="num">${r.count}</td><td>${fmt(r.last)}</td><td class="num">${r.gap?r.gap+'d':'—'}</td><td>${r.next?fmt(r.next):'—'}</td><td><span class="pill ${st[0]}">${st[1]}</span></td></tr>`}).join('')}</tbody></table></div>`
+    :'<div class="empty">The rhythm fills in as supply tickets come through. After two requests for the same item at the same cabin it predicts the next one.</div>';
+  el.innerHTML=html;
+  el.onchange=async e=>{const c=e.target.closest('[data-ord]');if(!c||!c.checked)return;c.disabled=true;try{const r=await api('ticket/'+c.dataset.ord,{status:'ordered'});S.tickets=S.tickets.map(t=>t.id===r.ticket.id?r.ticket:t);toast('Ordered');setTimeout(renderAll,250);}catch(x){c.checked=false;c.disabled=false;toast(x.message)}};
+  el.onclick=async e=>{const b=e.target.closest('[data-allord]');if(!b)return;b.disabled=true;const ids=(byProp[b.dataset.allord]||[]).map(t=>t.id);for(const id of ids){try{const r=await api('ticket/'+id,{status:'ordered'});S.tickets=S.tickets.map(t=>t.id===id?r.ticket:t);}catch{}}renderAll();toast('All marked ordered');};
+}
+
+// ---------- maintenance ----------
+function renderMaint(){
+  const el=$('#tab-maint');const locks=latestLocks();
+  const props=S.properties.filter(p=>p.active&&visible(p.id));
+  let html='';
+  props.forEach(p=>{
+    const items=S.maintenance.filter(m=>m.property===p.id).map(m=>({m,s:maintStatus(m)})).sort((a,b)=>(a.s.d??9999)-(b.s.d??9999));
+    const lock=locks.filter(l=>l.property===p.id&&l.pct!=null);
+    html+=`<div class="pgroup"><h3>${esc(p.name)}</h3><div class="tblwrap"><table class="tbl"><thead><tr><th>Item</th><th class="num">Every</th><th>Last done</th><th>Next due</th><th>Status</th><th></th></tr></thead><tbody>`;
+    html+=items.map(({m,s})=>`<tr data-id="${m.id}"><td>${esc(m.name)}${m.source==='lock'&&lock.length?`<div class="sub">${lock.map(l=>esc(l.name)+' '+l.pct+'%').join(' · ')}</div>`:''}${m.notes?`<div class="sub">${esc(m.notes)}</div>`:''}</td><td class="num">${m.intervalDays}d</td><td>${fmt(m.lastDone)}</td><td>${s.due?fmt(s.due):'—'}</td><td><span class="pill ${s.cls}">${s.label}</span></td><td style="white-space:nowrap"><button class="btn s p" data-done="${m.id}">Done today</button> <button class="btn s ghost" data-edit="${m.id}">Edit</button> <button class="btn s ghost" data-del="${m.id}" title="Delete">✕</button></td></tr>`).join('')||'<tr><td colspan="6" class="sub">No items yet.</td></tr>';
+    html+=`</tbody></table></div><form class="inline" data-add="${p.id}" style="margin-top:8px"><input type="text" name="name" placeholder="Add item (e.g. Dock in / out)" required><input type="number" name="interval" placeholder="days" min="1" value="90" required><input type="date" name="last" title="Last done (optional)"><button class="btn s">Add</button></form></div>`;
+  });
+  el.innerHTML=html||'<div class="empty">No properties selected.</div>';
+  el.onclick=async e=>{
+    const d=e.target.closest('[data-done]');const ed=e.target.closest('[data-edit]');const del=e.target.closest('[data-del]');
+    if(del){if(!confirm('Delete this maintenance item?'))return;try{await api('maintenance',{op:'delete',id:del.dataset.del});S.maintenance=S.maintenance.filter(x=>x.id!==del.dataset.del);renderAll();toast('Deleted');}catch(x){toast(x.message)}return;}
+    if(d){d.disabled=true;const date=prompt('Date completed (YYYY-MM-DD)',today());if(!date){d.disabled=false;return;}try{const r=await api('maintenance',{op:'done',id:d.dataset.done,date});S.maintenance=S.maintenance.map(m=>m.id===r.item.id?r.item:m);renderAll();toast('Logged');}catch(x){d.disabled=false;toast(x.message)}}
+    if(ed){const m=S.maintenance.find(x=>x.id===ed.dataset.edit);const name=prompt('Item name',m.name);if(name==null)return;const iv=prompt('Repeat every N days',m.intervalDays);if(iv==null)return;const last=prompt('Last done (YYYY-MM-DD, blank = never)',m.lastDone||'');if(last==null)return;const notes=prompt('Notes',m.notes||'');if(notes==null)return;
+      if(name.trim()==='')return;
+      try{const r=await api('maintenance',{op:'upsert',item:{id:m.id,property:m.property,name,intervalDays:iv,lastDone:last.trim()||null,notes}});S.maintenance=S.maintenance.map(x=>x.id===r.item.id?r.item:x);renderAll();toast('Saved');}catch(x){toast(x.message)}}
+  };
+  el.onsubmit=async e=>{e.preventDefault();const f=e.target.closest('[data-add]');if(!f)return;const fd=new FormData(f);try{const r=await api('maintenance',{op:'upsert',item:{property:f.dataset.add,name:fd.get('name'),intervalDays:fd.get('interval'),lastDone:fd.get('last')||null}});S.maintenance.push(r.item);renderAll();toast('Added');}catch(x){toast(x.message)}};
+}
+
+// ---------- locks ----------
+function spark(hist){
+  const pts=hist.filter(h=>h.pct!=null).slice(-60);if(pts.length<2)return'';
+  const w=300,h=56,min=Math.max(0,Math.min(...pts.map(p=>p.pct))-10),max=100;
+  const x=i=>(i/(pts.length-1))*(w-4)+2,y=v=>h-2-((v-min)/(max-min))*(h-4);
+  const d=pts.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(p.pct).toFixed(1)).join(' ');
+  const last=pts[pts.length-1];
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><path d="${d} L${x(pts.length-1).toFixed(1)} ${h} L2 ${h} Z" fill="rgba(58,90,64,.12)"/><path d="${d}" fill="none" stroke="#3a5a40" stroke-width="2"/><circle cx="${x(pts.length-1).toFixed(1)}" cy="${y(last.pct).toFixed(1)}" r="3.5" fill="#b8501f"/></svg>`;
+}
+function estimate(hist,threshold){
+  const pts=hist.filter(h=>h.pct!=null).slice(-60);if(pts.length<5)return null;
+  const t0=new Date(pts[0].date);const xs=pts.map(p=>(new Date(p.date)-t0)/DAY),ys=pts.map(p=>p.pct);
+  const n=xs.length,mx=xs.reduce((a,b)=>a+b)/n,my=ys.reduce((a,b)=>a+b)/n;
+  const slope=xs.reduce((a,x,i)=>a+(x-mx)*(ys[i]-my),0)/(xs.reduce((a,x)=>a+(x-mx)**2,0)||1);
+  if(slope>=-0.01)return null;
+  return Math.round((threshold-ys[n-1])/slope);
+}
+function renderLocks(){
+  const el=$('#tab-locks');const L=latestLocks().filter(l=>visible(l.property));
+  let html='';
+  if(!S.hasHospitableToken)html+='<div class="callout" style="margin-bottom:14px">Add your Hospitable API token under Settings to start the daily battery sync.</div>';
+  html+=`<div class="inline" style="margin-bottom:14px"><button class="btn p" id="syncNow" ${S.hasHospitableToken?'':'disabled'}>Sync now</button><span class="sync">Runs automatically every morning at 6am Central.</span></div>`;
+  html+=L.length?`<div class="locks">${L.map(l=>{const th=l.threshold||30,cls=l.pct==null?'':l.pct<=th?'crit':l.pct<=th+15?'warn':'ok';const est=estimate(l.hist,th);
+    return `<div class="lock ${cls}"><div class="inline" style="justify-content:space-between"><span class="pill prop ${prop(l.property).region==='fl'?'fl':''}">${esc(prop(l.property).short)}</span><span class="m">${esc(l.manufacturer||'')} · ${l.online?'online':'<b style=\"color:var(--crit)\">offline</b>'} · ${l.locked===true?'locked':l.locked===false?'unlocked':''}</span></div>
+    <div style="font-weight:600;margin-top:6px">${esc(l.name)}</div><div class="pct">${l.pct==null?'—':l.pct+'%'}</div><div class="bar"><i style="width:${l.pct||0}%"></i></div>
+    <div class="m">Alert threshold ${th}% · read ${fmt(l.date)}${est!=null?` · ~${est}d to threshold at current drain`:''}${l.issues&&l.issues.length?' · '+esc(l.issues.join(', ')):''}</div>${spark(l.hist)}</div>`}).join('')}</div>`
+    :'<div class="empty">No readings yet. Add the token, then Sync now.</div>';
+  el.innerHTML=html;
+  const b=$('#syncNow');if(b)b.onclick=async()=>{b.disabled=true;b.textContent='Syncing…';try{const r=await api('lock-sync',{});if(!r.ok)throw new Error(r.error==='no_token'?'No token on file':'Sync failed');await load();toast(`Synced ${r.readings} device${r.readings===1?'':'s'}`+(r.errors.length?` · ${r.errors.length} error(s)`:''));}catch(x){toast(x.message);b.disabled=false;b.textContent='Sync now';}};
+}
+
+// ---------- settings ----------
+function renderSettings(){
+  const el=$('#tab-settings');const origin=location.origin;
+  el.innerHTML=`
+  <div class="card"><h3>Cleaner links</h3><p>Ellie bookmarks this on her phone. No login. The Florida link only shows Florida properties.</p>
+    <div class="inline" style="margin-bottom:6px"><code>${origin}/tickets/</code><button class="btn s" data-copy="${origin}/tickets/">Copy</button><span class="sub">Up North</span></div>
+    <div class="inline"><code>${origin}/tickets/?region=fl</code><button class="btn s" data-copy="${origin}/tickets/?region=fl">Copy</button><span class="sub">Florida</span></div></div>
+  <div class="card"><h3>Properties</h3><p>Turn the Florida condo on when it's live. Hospitable ID enables lock-battery sync (from the URL of the property in Hospitable, or the API).</p>
+    <div class="tblwrap"><table class="tbl props"><thead><tr><th>Name</th><th>Short</th><th>Region</th><th>Hospitable property ID</th><th>Active</th></tr></thead><tbody id="propRows">${S.properties.map(p=>`<tr data-pid="${esc(p.id)}"><td><input type="text" data-k="name" value="${esc(p.name)}"></td><td><input type="text" class="short" data-k="short" value="${esc(p.short)}"></td><td><select data-k="region"><option value="wi" ${p.region==='wi'?'selected':''}>Wisconsin</option><option value="fl" ${p.region==='fl'?'selected':''}>Florida</option></select></td><td><input type="text" class="uuid" data-k="hospitableId" value="${esc(p.hospitableId||'')}" placeholder="uuid"></td><td><input type="checkbox" data-k="active" ${p.active?'checked':''}></td></tr>`).join('')}</tbody></table></div>
+    <div class="inline" style="margin-top:10px"><button class="btn" id="propAdd">Add property</button><button class="btn p" id="propSave">Save properties</button></div></div>
+  <div class="card"><h3>Hospitable token</h3><p>${S.hasHospitableToken?'A token is on file. Paste a new one to replace it.':'No token yet. Mint a read-only Personal Access Token in Hospitable (Settings → Integrations → API access) and paste it here. It is stored server-side and never shown again.'}</p>
+    <div class="inline"><input type="password" id="hosTok" placeholder="Bearer token" style="flex:1;min-width:220px" autocomplete="off"><button class="btn p" id="hosSave">Save token</button></div></div>
+  <div class="card"><h3>Passphrase</h3><p>Shared by you and Molly. Changing it signs out every browser except this one.</p>
+    <div class="inline"><input type="password" id="newPass" placeholder="New passphrase (6+)" autocomplete="new-password"><button class="btn" id="passSave">Change</button><button class="btn ghost" id="signout">Sign out this browser</button></div></div>
+  <div class="card"><h3>Export</h3><p>All tickets as CSV.</p><button class="btn" id="csv">Download tickets.csv</button></div>`;
+  el.onclick=async e=>{
+    const c=e.target.closest('[data-copy]');if(c){try{await navigator.clipboard.writeText(c.dataset.copy);toast('Copied')}catch{prompt('Copy this link',c.dataset.copy)}return;}
+    if(e.target.id==='propAdd'){const tr=document.createElement('tr');tr.dataset.pid='';tr.innerHTML='<td><input type="text" data-k="name" placeholder="Name"></td><td><input type="text" class="short" data-k="short" placeholder="Short"></td><td><select data-k="region"><option value="wi">Wisconsin</option><option value="fl">Florida</option></select></td><td><input type="text" class="uuid" data-k="hospitableId" placeholder="uuid"></td><td><input type="checkbox" data-k="active" checked></td>';$('#propRows').appendChild(tr);return;}
+    if(e.target.id==='propSave'){const items=$$('#propRows tr').map(tr=>{const g=k=>$(`[data-k=${k}]`,tr);return{id:tr.dataset.pid,name:g('name').value,short:g('short').value,region:g('region').value,hospitableId:g('hospitableId').value,active:g('active').checked}}).filter(p=>p.name.trim());
+      try{const r=await api('properties',{items});S.properties=r.items;renderFilter();renderAll();toast('Properties saved');}catch(x){toast(x.message)}return;}
+    if(e.target.id==='hosSave'){const v=$('#hosTok').value.trim();if(!v)return;try{const r=await api('secrets',{hospitableToken:v});S.hasHospitableToken=r.hasHospitableToken;$('#hosTok').value='';renderAll();toast('Token saved — run Sync now under Locks');}catch(x){toast(x.message)}return;}
+    if(e.target.id==='passSave'){const v=$('#newPass').value.trim();if(v.length<6)return toast('6+ characters');try{await api('passphrase',{passphrase:v});KEY=v;ls.set('pd_ops_key',v);$('#newPass').value='';toast('Passphrase changed');}catch(x){toast(x.message)}return;}
+    if(e.target.id==='signout'){ls.del('pd_ops_key');KEY='';location.reload();return;}
+    if(e.target.id==='csv'){const rows=[['id','created','property','kind','item','qty','urgency','location','status','assignee','submittedBy','notes','managerNotes','doneAt']];S.tickets.forEach(t=>rows.push([t.id,t.createdAt,prop(t.property).name,t.kind,t.item,t.qty,t.urgency,t.location,t.status,t.assignee,t.submittedBy,t.notes,t.managerNotes,t.doneAt||'']));
+      const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='tickets.csv';a.click();return;}
+  };
+}
+
+function renderAll(){renderTiles();renderTickets();renderSupplies();renderMaint();renderLocks();renderSettings();setTab(tab);}
+boot();
+})();
+</script>
+</body>
+</html>
