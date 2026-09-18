@@ -336,19 +336,19 @@ function renderMaint(){
     const items=S.maintenance.filter(m=>m.property===p.id).map(m=>({m,s:maintStatus(m)})).sort((a,b)=>(a.s.d??9999)-(b.s.d??9999));
     const lock=locks.filter(l=>l.property===p.id&&l.pct!=null);
     html+=`<div class="pgroup"><h3>${esc(p.name)}</h3><div class="tblwrap"><table class="tbl"><thead><tr><th>Item</th><th class="num">Every</th><th>Last done</th><th>Next due</th><th>Status</th><th></th></tr></thead><tbody>`;
-    html+=items.map(({m,s})=>`<tr data-id="${m.id}"><td>${esc(m.name)}${m.source==='lock'&&lock.length?`<div class="sub">${lock.map(l=>esc(l.name)+' '+l.pct+'%').join(' · ')}</div>`:''}${m.notes?`<div class="sub">${esc(m.notes)}</div>`:''}</td><td class="num">${m.intervalDays}d</td><td>${fmt(m.lastDone)}</td><td>${s.due?fmt(s.due):'—'}</td><td><span class="pill ${s.cls}">${s.label}</span></td><td style="white-space:nowrap"><button class="btn s p" data-done="${m.id}">Done today</button> <button class="btn s ghost" data-edit="${m.id}">Edit</button> <button class="btn s ghost" data-del="${m.id}" title="Delete">✕</button></td></tr>`).join('')||'<tr><td colspan="6" class="sub">No items yet.</td></tr>';
+    html+=items.map(({m,s})=>`<tr data-id="${m.id}"><td>${esc(m.name)}${m.source==='lock'&&lock.length?`<div class="sub">${lock.map(l=>esc(l.name)+' '+l.pct+'%').join(' · ')}</div>`:''}${m.notes?`<div class="sub">${esc(m.notes)}</div>`:''}</td><td class="num">${m.intervalDays}d</td><td>${fmt(m.lastDone)}${(m.history||[]).length&&(m.history[m.history.length-1].by)?`<div class="sub">by ${esc(m.history[m.history.length-1].by)}</div>`:''}</td><td>${s.due?fmt(s.due):'—'}</td><td><span class="pill ${s.cls}">${s.label}</span></td><td style="white-space:nowrap"><button class="btn s p" data-done="${m.id}">Done today</button> <button class="btn s ghost" data-edit="${m.id}">Edit</button> <button class="btn s ghost" data-del="${m.id}" title="Delete">✕</button></td></tr>`).join('')||'<tr><td colspan="6" class="sub">No items yet.</td></tr>';
     html+=`</tbody></table></div><form class="inline" data-add="${p.id}" style="margin-top:8px"><input type="text" name="name" placeholder="Add item (e.g. Dock in / out)" required><input type="number" name="interval" placeholder="days" min="1" value="90" required><input type="date" name="last" title="Last done (optional)"><button class="btn s">Add</button></form></div>`;
   });
   el.innerHTML=html||'<div class="empty">No properties selected.</div>';
   el.onclick=async e=>{
     const d=e.target.closest('[data-done]');const ed=e.target.closest('[data-edit]');const del=e.target.closest('[data-del]');
     if(del){if(!confirm('Delete this maintenance item?'))return;try{await api('maintenance',{op:'delete',id:del.dataset.del});S.maintenance=S.maintenance.filter(x=>x.id!==del.dataset.del);renderAll();toast('Deleted');}catch(x){toast(x.message)}return;}
-    if(d){d.disabled=true;const date=prompt('Date completed (YYYY-MM-DD)',today());if(!date){d.disabled=false;return;}try{const r=await api('maintenance',{op:'done',id:d.dataset.done,date});S.maintenance=S.maintenance.map(m=>m.id===r.item.id?r.item:m);renderAll();toast('Logged');}catch(x){d.disabled=false;toast(x.message)}}
+    if(d){d.disabled=true;const date=prompt('Date completed (YYYY-MM-DD)',today());if(!date){d.disabled=false;return;}try{const r=await api('maintenance',{op:'done',id:d.dataset.done,date,by:ls.get('pd_ops_name','')});S.maintenance=S.maintenance.map(m=>m.id===r.item.id?r.item:m);renderAll();toast('Logged');}catch(x){d.disabled=false;toast(x.message)}}
     if(ed){const m=S.maintenance.find(x=>x.id===ed.dataset.edit);const name=prompt('Item name',m.name);if(name==null)return;const iv=prompt('Repeat every N days',m.intervalDays);if(iv==null)return;const last=prompt('Last done (YYYY-MM-DD, blank = never)',m.lastDone||'');if(last==null)return;const notes=prompt('Notes',m.notes||'');if(notes==null)return;
       if(name.trim()==='')return;
-      try{const r=await api('maintenance',{op:'upsert',item:{id:m.id,property:m.property,name,intervalDays:iv,lastDone:last.trim()||null,notes}});S.maintenance=S.maintenance.map(x=>x.id===r.item.id?r.item:x);renderAll();toast('Saved');}catch(x){toast(x.message)}}
+      try{const r=await api('maintenance',{op:'upsert',by:ls.get('pd_ops_name',''),item:{id:m.id,property:m.property,name,intervalDays:iv,lastDone:last.trim()||null,notes}});S.maintenance=S.maintenance.map(x=>x.id===r.item.id?r.item:x);renderAll();toast('Saved');}catch(x){toast(x.message)}}
   };
-  el.onsubmit=async e=>{e.preventDefault();const f=e.target.closest('[data-add]');if(!f)return;const fd=new FormData(f);try{const r=await api('maintenance',{op:'upsert',item:{property:f.dataset.add,name:fd.get('name'),intervalDays:fd.get('interval'),lastDone:fd.get('last')||null}});S.maintenance.push(r.item);renderAll();toast('Added');}catch(x){toast(x.message)}};
+  el.onsubmit=async e=>{e.preventDefault();const f=e.target.closest('[data-add]');if(!f)return;const fd=new FormData(f);try{const r=await api('maintenance',{op:'upsert',by:ls.get('pd_ops_name',''),item:{property:f.dataset.add,name:fd.get('name'),intervalDays:fd.get('interval'),lastDone:fd.get('last')||null}});S.maintenance.push(r.item);renderAll();toast('Added');}catch(x){toast(x.message)}};
 }
 
 // ---------- locks ----------
@@ -386,7 +386,7 @@ function renderLocks(){
 function renderSettings(){
   const el=$('#tab-settings');const origin=location.origin;
   el.innerHTML=`
-  <div class="card"><h3>Cleaner links</h3><p>Ellie bookmarks this on her phone. No login. The Florida link only shows Florida properties.</p>
+  <div class="card"><h3>Cleaner links</h3><p>Ellie bookmarks this on her phone. No login. It has two modes: New ticket, and Maintenance (she can see the full schedule, mark items done, edit intervals, add items — no delete). The Florida link only shows Florida properties.</p>
     <div class="inline" style="margin-bottom:6px"><code>${origin}/tickets/</code><button class="btn s" data-copy="${origin}/tickets/">Copy</button><span class="sub">Up North</span></div>
     <div class="inline"><code>${origin}/tickets/?region=fl</code><button class="btn s" data-copy="${origin}/tickets/?region=fl">Copy</button><span class="sub">Florida</span></div></div>
   <div class="card"><h3>Properties</h3><p>Turn the Florida condo on when it's live. Hospitable ID enables lock-battery sync (from the URL of the property in Hospitable, or the API).</p>
@@ -394,6 +394,8 @@ function renderSettings(){
     <div class="inline" style="margin-top:10px"><button class="btn" id="propAdd">Add property</button><button class="btn p" id="propSave">Save properties</button></div></div>
   <div class="card"><h3>Hospitable token</h3><p>${S.hasHospitableToken?'A token is on file. Paste a new one to replace it.':'No token yet. Mint a read-only Personal Access Token in Hospitable (Settings → Integrations → API access) and paste it here. It is stored server-side and never shown again.'}</p>
     <div class="inline"><input type="password" id="hosTok" placeholder="Bearer token" style="flex:1;min-width:220px" autocomplete="off"><button class="btn p" id="hosSave">Save token</button></div></div>
+  <div class="card"><h3>Your name on this browser</h3><p>Logged next to maintenance you mark done, so you can tell who did what (Ellie's entries come from her page).</p>
+    <div class="inline"><input type="text" id="opsName" placeholder="Ethan or Molly" value="${esc(ls.get('pd_ops_name',''))}"><button class="btn" id="opsNameSave">Save</button></div></div>
   <div class="card"><h3>Passphrase</h3><p>Shared by you and Molly. Changing it signs out every browser except this one.</p>
     <div class="inline"><input type="password" id="newPass" placeholder="New passphrase (6+)" autocomplete="new-password"><button class="btn" id="passSave">Change</button><button class="btn ghost" id="signout">Sign out this browser</button></div></div>
   <div class="card"><h3>Export</h3><p>All tickets as CSV.</p><button class="btn" id="csv">Download tickets.csv</button></div>`;
@@ -404,6 +406,7 @@ function renderSettings(){
       try{const r=await api('properties',{items});S.properties=r.items;renderFilter();renderAll();toast('Properties saved');}catch(x){toast(x.message)}return;}
     if(e.target.id==='hosSave'){const v=$('#hosTok').value.trim();if(!v)return;try{const r=await api('secrets',{hospitableToken:v});S.hasHospitableToken=r.hasHospitableToken;$('#hosTok').value='';renderAll();toast('Token saved — run Sync now under Locks');}catch(x){toast(x.message)}return;}
     if(e.target.id==='passSave'){const v=$('#newPass').value.trim();if(v.length<6)return toast('6+ characters');try{await api('passphrase',{passphrase:v});KEY=v;ls.set('pd_ops_key',v);$('#newPass').value='';toast('Passphrase changed');}catch(x){toast(x.message)}return;}
+    if(e.target.id==='opsNameSave'){ls.set('pd_ops_name',$('#opsName').value.trim());toast('Saved');return;}
     if(e.target.id==='signout'){ls.del('pd_ops_key');KEY='';location.reload();return;}
     if(e.target.id==='csv'){const rows=[['id','created','property','kind','item','qty','urgency','location','status','assignee','submittedBy','notes','managerNotes','doneAt']];S.tickets.forEach(t=>rows.push([t.id,t.createdAt,prop(t.property).name,t.kind,t.item,t.qty,t.urgency,t.location,t.status,t.assignee,t.submittedBy,t.notes,t.managerNotes,t.doneAt||'']));
       const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='tickets.csv';a.click();return;}
