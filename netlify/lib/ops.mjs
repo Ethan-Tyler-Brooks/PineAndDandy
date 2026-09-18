@@ -50,21 +50,42 @@ const SEED_MAINT = {
     ["Fridge coils vacuumed", 365],
     ["Gutters cleared", 180],
     ["Septic pumped", 1095],
+    ["Smoke / CO detectors tested", 180],
+  ],
+  // Deep-cleaning rhythm — the cleaner logs these herself from /tickets/ → Maintenance.
+  deepClean: [
+    ["Deep clean (full)", 90],
+    ["Comforters / duvet covers washed", 90],
+    ["Mattress protectors washed", 180],
+    ["Pillows washed or replaced", 365],
+    ["Oven deep clean", 90],
+    ["Fridge + freezer clean-out", 90],
+    ["Windows (inside)", 180],
+    ["Baseboards + vents dusted", 90],
+    ["Shower heads + drains descaled", 90],
+    ["Washer clean cycle + dryer lint trap deep clean", 60],
+    ["Grill deep clean", 90],
+    ["Deck / patio furniture wipe-down", 30],
   ],
   og: [
     ["Hot tub filter rinse", 30],
     ["Hot tub water change", 120],
+    ["Hot tub cover conditioned", 180],
   ],
   grandy: [
     ["Hot tub filter rinse", 30],
     ["Hot tub water change", 120],
+    ["Hot tub cover conditioned", 180],
     ["Sauna heater + stones check", 180],
+    ["Dishwasher filter cleaned", 30],
   ],
   dgt: [],
   fl: [
     ["HVAC filter", 60],
     ["Smart lock batteries", 180],
     ["Smoke / CO detector batteries", 365],
+    ["Smoke / CO detectors tested", 180],
+    ["Dishwasher filter cleaned", 30],
   ],
 };
 
@@ -81,12 +102,14 @@ export async function listDocs(prefix, s = store()) {
   return docs.filter(Boolean);
 }
 
+export const SEEDS = SEED_MAINT;
+
 export async function ensureMaintenanceSeeded(properties, s = store()) {
   const existing = await listDocs("maint/", s);
   if (existing.length) return existing;
   const items = [];
   for (const p of properties) {
-    const seeds = [...(p.region === "fl" ? [] : SEED_MAINT.common), ...(SEED_MAINT[p.id] || [])];
+    const seeds = [...(p.region === "fl" ? [] : SEED_MAINT.common), ...SEED_MAINT.deepClean, ...(SEED_MAINT[p.id] || [])];
     for (const [name, intervalDays] of seeds) {
       items.push({
         id: newId("m"),

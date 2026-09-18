@@ -99,6 +99,20 @@ export default async (req) => {
     return json({ ok: true });
   }
 
+  // Cleaner-side maintenance: read the schedule, log completions, add/edit items (no delete).
+  if (req.method === "GET" && route === "maintenance") {
+    const props = (await getProperties(s)).filter((p) => p.active);
+    const active = new Set(props.map((p) => p.id));
+    const items = (await ensureMaintenanceSeeded(props, s)).filter((m) => active.has(m.property));
+    return json({ properties: props.map(({ id, name, short, region }) => ({ id, name, short, region })), items });
+  }
+
+  if (req.method === "POST" && route === "maintenance/cleaner") {
+    const b = await readBody(req);
+    if (b.website) return json({ ok: true }); // honeypot
+    return handleMaint(b, s, { allowDelete: false });
+  }
+
   // ---------- manager (passphrase) ----------
   if (!(await checkKey(req, s))) return json({ error: "unauthorized" }, 401);
 
@@ -153,38 +167,7 @@ export default async (req) => {
   }
 
   if (req.method === "POST" && route === "maintenance") {
-    const b = await readBody(req);
-    if (b.op === "delete" && b.id) {
-      await s.delete("maint/" + b.id);
-      return json({ ok: true });
-    }
-    if (b.op === "done" && b.id) {
-      const m = await s.get("maint/" + b.id, { type: "json" });
-      if (!m) return json({ error: "not found" }, 404);
-      const at = /^\d{4}-\d{2}-\d{2}$/.test(b.date || "") ? b.date : new Date().toISOString().slice(0, 10);
-      m.lastDone = at;
-      m.history = [...(m.history || []), { at, note: clip(b.note, 300) }].slice(-40);
-      await s.setJSON("maint/" + m.id, m);
-      return json({ ok: true, item: m });
-    }
-    if (b.op === "upsert" && b.item) {
-      const it = b.item;
-      const id = clip(it.id, 40) || newId("m");
-      const prev = (await s.get("maint/" + id, { type: "json" })) || { id, history: [], lastDone: null, source: "manual" };
-      const m = {
-        ...prev,
-        id,
-        property: clip(it.property, 40) || prev.property,
-        name: clip(it.name, 120) || prev.name,
-        intervalDays: Math.max(1, Math.min(3650, parseInt(it.intervalDays, 10) || prev.intervalDays || 90)),
-        lastDone: /^\d{4}-\d{2}-\d{2}$/.test(it.lastDone || "") ? it.lastDone : (it.lastDone === null ? null : prev.lastDone),
-        notes: typeof it.notes === "string" ? clip(it.notes, 500) : prev.notes || "",
-      };
-      if (!m.property || !m.name) return json({ error: "property and name required" }, 400);
-      await s.setJSON("maint/" + id, m);
-      return json({ ok: true, item: m });
-    }
-    return json({ error: "bad op" }, 400);
+    return handleMaint(await readBody(req), s, { allowDelete: true });
   }
 
   if (req.method === "POST" && route === "properties") {
@@ -225,3 +208,43 @@ export default async (req) => {
 
   return json({ error: "no such route", route }, 404);
 };
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+async function handleMaint(b, s, { allowDelete }) {
+  const by = clip(b.by, 60);
+  if (b.op === "delete" && b.id) {
+    if (!allowDelete) return json({ error: "not allowed" }, 403);
+    await s.delete("maint/" + b.id);
+    return json({ ok: true });
+  }
+  if (b.op === "done" && b.id) {
+    const m = await s.get("maint/" + b.id, { type: "json" });
+    if (!m) return json({ error: "not found" }, 404);
+    const at = DATE_RE.test(b.date || "") ? b.date : new Date().toISOString().slice(0, 10);
+    if (!m.lastDone || at >= m.lastDone) m.lastDone = at;
+    m.history = [...(m.history || []), { at, note: clip(b.note, 300), by }].slice(-40);
+    await s.setJSON("maint/" + m.id, m);
+    return json({ ok: true, item: m });
+  }
+  if (b.op === "upsert" && b.item) {
+    const it = b.item;
+    const id = clip(it.id, 40) || newId("m");
+    const prev = (await s.get("maint/" + id, { type: "json" })) || { id, history: [], lastDone: null, source: "manual", createdBy: by };
+    const m = {
+      ...prev,
+      id,
+      property: clip(it.property, 40) || prev.property,
+      name: clip(it.name, 120) || prev.name,
+      intervalDays: Math.max(1, Math.min(3650, parseInt(it.intervalDays, 10) || prev.intervalDays || 90)),
+      lastDone: DATE_RE.test(it.lastDone || "") ? it.lastDone : (it.lastDone === null ? null : prev.lastDone),
+      notes: typeof it.notes === "string" ? clip(it.notes, 500) : prev.notes || "",
+      updatedBy: by,
+    };
+    if (!m.property || !m.name) return json({ error: "property and name required" }, 400);
+    const props = await getProperties(s);
+    if (!props.some((p) => p.id === m.property)) return json({ error: "unknown property" }, 400);
+    await s.setJSON("maint/" + id, m);
+    return json({ ok: true, item: m });
+  }
+  return json({ error: "bad op" }, 400);
+}
