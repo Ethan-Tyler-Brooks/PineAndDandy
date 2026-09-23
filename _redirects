@@ -1,0 +1,51 @@
+# Canonicalise extensionless URLs to their .html counterpart.
+# Every canonical tag, sitemap entry, internal link and llms.txt entry on this
+# site already uses the .html form; Netlify was also serving the extensionless
+# form at 200, which split Google's signal across two URLs per page.
+# Forced 301s, matching the fix already shipped on refinedmortgage (2026-09-14).
+
+/area-guide  /area-guide.html  301!
+/dining  /dining.html  301!
+/fishing  /fishing.html  301!
+/grandy-welcome-guide  /grandy-welcome-guide.html  301!
+/index  /index.html  301!
+/og-welcome-guide  /og-welcome-guide.html  301!
+/the-grandy-dandy  /the-grandy-dandy.html  301!
+/the-og  /the-og.html  301!
+
+/journal/atv-utv-trails-eagle-river-guide  /journal/atv-utv-trails-eagle-river-guide.html  301!
+/journal/berry-picking-farmers-markets-eagle-river-guide  /journal/berry-picking-farmers-markets-eagle-river-guide.html  301!
+/journal/biking-eagle-river-northwoods-trails-guide  /journal/biking-eagle-river-northwoods-trails-guide.html  301!
+/journal/boating-eagle-river-chain-guide  /journal/boating-eagle-river-chain-guide.html  301!
+/journal/camping-near-eagle-river-guide  /journal/camping-near-eagle-river-guide.html  301!
+/journal/cranberry-country-eagle-river-guide  /journal/cranberry-country-eagle-river-guide.html  301!
+/journal/crappie-panfish-fishing-eagle-river-chain-guide  /journal/crappie-panfish-fishing-eagle-river-chain-guide.html  301!
+/journal/cross-country-skiing-eagle-river-trails-guide  /journal/cross-country-skiing-eagle-river-trails-guide.html  301!
+/journal/day-trips-from-eagle-river-guide  /journal/day-trips-from-eagle-river-guide.html  301!
+/journal/downtown-eagle-river-shopping-guide  /journal/downtown-eagle-river-shopping-guide.html  301!
+/journal/eagle-river-chain-boat-landings-guide  /journal/eagle-river-chain-boat-landings-guide.html  301!
+/journal/eagle-river-chain-of-lakes-guide  /journal/eagle-river-chain-of-lakes-guide.html  301!
+/journal/eagle-river-events-calendar-guide  /journal/eagle-river-events-calendar-guide.html  301!
+/journal/eagle-river-weekend-itinerary  /journal/eagle-river-weekend-itinerary.html  301!
+/journal/fall-fishing-eagle-river-northwoods-guide  /journal/fall-fishing-eagle-river-northwoods-guide.html  301!
+/journal/fall-musky-fishing-eagle-river-chain-guide  /journal/fall-musky-fishing-eagle-river-chain-guide.html  301!
+/journal/golf-courses-near-eagle-river-guide  /journal/golf-courses-near-eagle-river-guide.html  301!
+/journal/hiking-trails-eagle-river-northwoods-guide  /journal/hiking-trails-eagle-river-northwoods-guide.html  301!
+/journal/hunting-near-eagle-river-northwoods-guide  /journal/hunting-near-eagle-river-northwoods-guide.html  301!
+/journal/ice-fishing-eagle-river-chain-guide  /journal/ice-fishing-eagle-river-chain-guide.html  301!
+/journal/lake-arbutus-swimming-paddling-guide  /journal/lake-arbutus-swimming-paddling-guide.html  301!
+/journal/largemouth-bass-fishing-eagle-river-chain-guide  /journal/largemouth-bass-fishing-eagle-river-chain-guide.html  301!
+/journal/musky-fishing-eagle-river-chain-guide  /journal/musky-fishing-eagle-river-chain-guide.html  301!
+/journal/northern-pike-fishing-eagle-river-chain-guide  /journal/northern-pike-fishing-eagle-river-chain-guide.html  301!
+/journal/northwoods-fall-color-guide  /journal/northwoods-fall-color-guide.html  301!
+/journal/packing-northwoods-cabin-trip-by-season  /journal/packing-northwoods-cabin-trip-by-season.html  301!
+/journal/rainy-day-activities-eagle-river-families  /journal/rainy-day-activities-eagle-river-families.html  301!
+/journal/smallmouth-bass-fishing-eagle-river-chain-guide  /journal/smallmouth-bass-fishing-eagle-river-chain-guide.html  301!
+/journal/snowmobiling-eagle-river-guide  /journal/snowmobiling-eagle-river-guide.html  301!
+/journal/snowshoeing-eagle-river-northwoods-guide  /journal/snowshoeing-eagle-river-northwoods-guide.html  301!
+/journal/spring-in-the-northwoods-eagle-river-guide  /journal/spring-in-the-northwoods-eagle-river-guide.html  301!
+/journal/stargazing-northern-lights-eagle-river-guide  /journal/stargazing-northern-lights-eagle-river-guide.html  301!
+/journal/supper-clubs-friday-fish-fry-guide  /journal/supper-clubs-friday-fish-fry-guide.html  301!
+/journal/walleye-fishing-eagle-river-chain-guide  /journal/walleye-fishing-eagle-river-chain-guide.html  301!
+/journal/waterfalls-scenic-drives-near-eagle-river-guide  /journal/waterfalls-scenic-drives-near-eagle-river-guide.html  301!
+/journal/wildlife-watching-eagle-river-northwoods-guide  /journal/wildlife-watching-eagle-river-northwoods-guide.html  301!
