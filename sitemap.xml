@@ -50,4 +50,7 @@
 <url><loc>https://www.thepineanddandy.com/journal/eagle-river-chain-fishing-season-by-month-guide.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.thepineanddandy.com/journal/lakefront-cabin-hot-tub-sauna-eagle-river-guide.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://www.thepineanddandy.com/journal/november-fishing-eagle-river-chain-guide.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.thepineanddandy.com/texts.html</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://www.thepineanddandy.com/privacy.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://www.thepineanddandy.com/sms-terms.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
 </urlset>
