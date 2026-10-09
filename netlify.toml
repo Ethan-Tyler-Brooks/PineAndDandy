@@ -6,25 +6,6 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# dandystay.com (domain alias on this site) — hub page served from /dandystay/
-[[redirects]]
-  from = "https://dandystay.com/*"
-  to = "https://www.dandystay.com/:splat"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "https://www.dandystay.com/"
-  to = "/dandystay/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "https://www.dandystay.com/*"
-  to = "/dandystay/:splat"
-  status = 200
-  force = true
-
 # Returning-guest SMS opt-in — netlify/functions/sms-signup.mjs
 [[redirects]]
   from = "/api/sms/*"
