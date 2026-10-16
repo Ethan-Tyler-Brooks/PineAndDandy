@@ -214,22 +214,26 @@ export default async (req) => {
 // Posts to a Make webhook (URL in Netlify env OPS_ALERT_WEBHOOK, never in this public repo).
 // The Make scenario sends via Quo from the cabin line to Molly's number, which is fixed there.
 const HYPE = [
-  "You are the CEO of clean sheets and the Queen of Up North. 👑",
+  "Mahjong queen, certified bookworm, future therapist, mom of 3, AND she orders the toilet paper. Is there anything you can't do? 🀄📚",
+  "Pung! Kong! Mahjong! ...and also paper towels. You win every round. 🀄",
+  "Plot twist: the main character of this book is YOU. Chapter 47: She Restocks the Cabin and Saves the Day. 📖",
+  "Future licensed counselor tip: ordering supplies is a healthy coping skill. You're basically already certified. 🧠💛",
+  "How does that make you feel? (Correct answer: AMAZING, because you're crushing it.) 🛋️",
+  "Three kids, grad school, two cabins, and still the coolest person in every room. Someone give this woman a parade. 🎉",
+  "Your kids think you're a superhero. The cabins think you're a superhero. Ethan definitely thinks you're a superhero. 🦸‍♀️",
+  "Passport stamps: many. Mahjong tiles: mastered. Cabin supplies: handled. Next destination: GREATNESS. ✈️",
+  "Wanderlust level: expert. Restock level: expert. Being awesome: off the charts. 🌍",
   "Somewhere a paper towel roll just whispered your name. Legend.",
-  "Hospitality icon. Supply-chain goddess. Probably also a great parallel parker. 🚗",
-  "Five-star reviews don't write themselves. Oh wait, yours basically do. ⭐⭐⭐⭐⭐",
-  "Fun fact: 100% of cabins are happier when you're in charge. Science. 🔬",
-  "You + a shopping cart = unstoppable. Go get 'em, tiger. 🐯",
-  "The loons on the lake are cheering for you right now. Probably. 🦆",
-  "Hot tub chemicals fear you. Dust bunnies flee. You're that girl.",
-  "If being awesome were a supply, we'd never run out. Because of you. 💅",
-  "Molly Brooks: wife, mom, mogul, restock royalty. Ethan is a lucky dude.",
   "Breaking news: local woman too amazing, cabins report record happiness. 📰",
   "This text was sent with 0 cringe. (Lie. Maximum cringe. Love you.) 😘",
-  "You're the reason the toilet paper never runs out and the vibes never stop. 🧻✨",
+  "Hot tub chemicals fear you. Dust bunnies flee. You're that girl.",
+  "Five-star reviews don't write themselves. Oh wait, yours basically do. ⭐⭐⭐⭐⭐",
   "Pine & Dandy runs on coffee, firewood, and you. Mostly you. ☕🪵",
-  "Rate your day: 10/10, would host again. Keep crushing it! 💪",
   "Roses are red, the cabin's a gem, you order the stuff, and we all say amen. 🌹",
+  "Fun fact: you could study for an exam, referee 3 kids, AND win a mahjong game all before lunch. Science. 🔬",
+  "If this restock were a novel, it'd be a bestseller. Because you're the author. 📚✨",
+  "Mental health counselor in training, cabin boss in reality. Ethan is a lucky dude.",
+  "Rate your day: 10/10, would host again, would travel again, would mahjong again. 💪",
 ];
 const smsSafe = (v) => String(v || "").replace(/[\\"]/g, "'").replace(/[\r\n\t]+/g, " ").replace(/[\u0000-\u001f]/g, "").trim();
 
