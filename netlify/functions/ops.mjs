@@ -79,7 +79,7 @@ export default async (req) => {
       doneAt: null,
     };
     await s.setJSON("tickets/" + id, ticket);
-    if (ticket.kind === "supply") await alertMolly(ticket, prop);
+    await alertTicket(ticket, prop);
     return json({ ok: true, id, createdAt: now });
   }
 
@@ -210,9 +210,9 @@ export default async (req) => {
   return json({ error: "no such route", route }, 404);
 };
 
-// ---------- supply alert text to Molly ----------
+// ---------- ticket alert texts (Molly: supplies; Ethan: repairs + hot tub supplies) ----------
 // Posts to a Make webhook (URL in Netlify env OPS_ALERT_WEBHOOK, never in this public repo).
-// The Make scenario sends via Quo from the cabin line to Molly's number, which is fixed there.
+// The Make scenario sends via Quo from the cabin line; recipient numbers are fixed there.
 const HYPE = [
   "Mahjong queen, certified bookworm, future therapist, mom of 3, AND she orders the toilet paper. Is there anything you can't do? 🀄📚",
   "Pung! Kong! Mahjong! ...and also paper towels. You win every round. 🀄",
@@ -226,7 +226,7 @@ const HYPE = [
   "Somewhere a paper towel roll just whispered your name. Legend.",
   "Breaking news: local woman too amazing, cabins report record happiness. 📰",
   "This text was sent with 0 cringe. (Lie. Maximum cringe. Love you.) 😘",
-  "Hot tub chemicals fear you. Dust bunnies flee. You're that girl.",
+  "Dust bunnies flee. Toilet paper bows. You're that girl.",
   "Five-star reviews don't write themselves. Oh wait, yours basically do. ⭐⭐⭐⭐⭐",
   "Pine & Dandy runs on coffee, firewood, and you. Mostly you. ☕🪵",
   "Roses are red, the cabin's a gem, you order the stuff, and we all say amen. 🌹",
@@ -237,28 +237,38 @@ const HYPE = [
 ];
 const smsSafe = (v) => String(v || "").replace(/[\\"]/g, "'").replace(/[\r\n\t]+/g, " ").replace(/[\u0000-\u001f]/g, "").trim();
 
-async function alertMolly(t, prop) {
+// Hot tub supplies go to Ethan, not Molly (she doesn't order them).
+const HOT_TUB_RE = /hot\s*-?\s*tub|hottub|\bspa\b|chlorine|bromine|\bshock\b|test strips?|\bph\b|alkalinity|defoamer|tub (filter|cover)/i;
+
+// Routing: repairs -> Ethan; hot tub supplies -> Ethan; all other supplies -> Molly (with hype).
+// "who" picks the route in the Make scenario; the actual phone numbers live only there.
+async function alertTicket(t, prop) {
   const hook = process.env.OPS_ALERT_WEBHOOK;
   if (!hook) return;
+  const text = [t.item, t.notes, t.location].join(" ");
+  const hotTub = t.kind === "supply" && HOT_TUB_RE.test(text);
+  const toEthan = t.kind === "repair" || hotTub;
   const urgent = t.urgency === "urgent" ? "URGENT " : "";
-  const parts = [
-    `${urgent}Supply alert 🛒 ${smsSafe(t.submittedBy)} says ${smsSafe(prop.name)} needs: ${smsSafe(t.item)}${t.qty ? " (" + smsSafe(t.qty) + ")" : ""}.`,
-  ];
+  const label = t.kind === "repair" ? "Repair ticket 🔧" : hotTub ? "Hot tub supply request 🛁" : "Supply alert 🛒";
+  const verb = t.kind === "repair" ? "reports at" : "says";
+  const what = t.kind === "repair" ? `${smsSafe(prop.name)}: ${smsSafe(t.item)}` : `${smsSafe(prop.name)} needs: ${smsSafe(t.item)}${t.qty ? " (" + smsSafe(t.qty) + ")" : ""}`;
+  const parts = [`${urgent}${label} ${smsSafe(t.submittedBy)} ${verb} ${what}.`];
   if (t.location) parts.push(`Where: ${smsSafe(t.location)}.`);
   if (t.notes) parts.push(`Note: ${smsSafe(t.notes).slice(0, 300)}`);
-  parts.push("Mark it ordered at thepineanddandy.com/ops/");
-  const hype = HYPE[Math.floor(Math.random() * HYPE.length)];
+  if (t.photo) parts.push("Photo attached in Ops.");
+  parts.push(t.kind === "repair" ? "Details: thepineanddandy.com/ops/" : "Mark it ordered at thepineanddandy.com/ops/");
+  let message = parts.join(" ");
   // Literal \n sequences become line breaks once Make embeds this in the JSON body.
-  const message = parts.join(" ") + "\\n\\n" + smsSafe(hype);
+  if (!toEthan) message += "\\n\\n" + smsSafe(HYPE[Math.floor(Math.random() * HYPE.length)]);
   try {
     await fetch(hook, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ message, ticket: t.id }),
+      body: JSON.stringify({ message, who: toEthan ? "ethan" : "molly", ticket: t.id }),
       signal: AbortSignal.timeout(5000),
     });
   } catch (e) {
-    console.error("supply alert failed", e && e.message);
+    console.error("ticket alert failed", e && e.message);
   }
 }
 
