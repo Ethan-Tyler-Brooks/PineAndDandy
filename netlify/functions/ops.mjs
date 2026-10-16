@@ -237,10 +237,84 @@ const HYPE = [
 ];
 const smsSafe = (v) => String(v || "").replace(/[\\"]/g, "'").replace(/[\r\n\t]+/g, " ").replace(/[\u0000-\u001f]/g, "").trim();
 
+// Ethan's texts (repairs, hot tub supplies) close with a random passage from these 200 popular
+// references. ESV wording is copyrighted (Crossway), so it is fetched live from the ESV API
+// (https://api.esv.org, key in Netlify env ESV_API_KEY) instead of being stored in this repo.
+// Without a key, or if the API fails, a public-domain KJV line is used instead.
+const VERSE_REFS = [
+  "John 3:16", "Jeremiah 29:11", "Philippians 4:13", "Romans 8:28", "Proverbs 3:5-6", "Isaiah 41:10",
+  "Philippians 4:6-7", "Matthew 28:19-20", "Joshua 1:9", "Romans 12:2", "Psalm 23:1-3", "Galatians 5:22-23",
+  "2 Timothy 3:16-17", "Ephesians 2:8-9", "Matthew 11:28-30", "Hebrews 11:1", "1 Corinthians 10:13",
+  "2 Corinthians 5:17", "John 14:6", "Isaiah 40:31", "Matthew 6:33", "Romans 5:8", "1 John 1:9",
+  "Psalm 46:10", "Proverbs 18:10", "Hebrews 12:1-2", "Psalm 119:105", "Romans 10:9", "John 1:1",
+  "John 16:33", "Lamentations 3:22-23", "Psalm 37:4", "Colossians 3:23", "Micah 6:8", "Matthew 5:16",
+  "Psalm 34:8", "1 Peter 5:7", "Romans 15:13", "James 1:2-3", "James 1:5", "Psalm 121:1-2", "Psalm 27:1",
+  "Deuteronomy 31:6", "Psalm 91:1-2", "Isaiah 26:3", "Philippians 4:8", "Psalm 51:10", "Matthew 22:37-39",
+  "1 Corinthians 13:4-7", "Ecclesiastes 3:1", "Psalm 118:24", "Proverbs 16:3", "Proverbs 16:9",
+  "Galatians 6:9", "Hebrews 13:8", "Hebrews 13:2", "1 Peter 4:9-10", "Romans 12:12", "Romans 12:10",
+  "Romans 12:13", "Colossians 3:12", "Colossians 3:17", "Ephesians 4:32", "Ephesians 4:2-3",
+  "Ephesians 3:20", "Ephesians 6:10", "Psalm 127:1", "Proverbs 24:3-4", "Matthew 6:34", "Matthew 7:7",
+  "Matthew 5:14", "Matthew 5:9", "John 15:5", "John 15:13", "John 13:34-35", "John 10:10", "John 11:25",
+  "John 8:12", "John 14:27", "John 14:1-2", "1 John 4:18", "1 John 4:19", "1 John 4:7", "1 John 3:18",
+  "2 Corinthians 12:9", "2 Corinthians 4:16-18", "2 Corinthians 9:7", "2 Corinthians 9:8",
+  "1 Thessalonians 5:16-18", "1 Thessalonians 5:11", "2 Thessalonians 3:13", "1 Timothy 4:12",
+  "2 Timothy 1:7", "Titus 2:7", "Psalm 1:1-3", "Psalm 16:11", "Psalm 19:1", "Psalm 19:14", "Psalm 28:7",
+  "Psalm 30:5", "Psalm 31:24", "Psalm 32:8", "Psalm 33:20-21", "Psalm 37:5", "Psalm 37:23-24",
+  "Psalm 40:1-2", "Psalm 42:11", "Psalm 46:1", "Psalm 55:22", "Psalm 56:3", "Psalm 62:1-2", "Psalm 73:26",
+  "Psalm 84:11", "Psalm 90:12", "Psalm 90:17", "Psalm 94:19", "Psalm 100:4-5", "Psalm 103:1-2",
+  "Psalm 103:12", "Psalm 107:1", "Psalm 112:7", "Psalm 115:1", "Psalm 119:11", "Psalm 128:1-2",
+  "Psalm 133:1", "Psalm 136:1", "Psalm 139:14", "Psalm 143:8", "Psalm 145:18", "Psalm 147:3", "Psalm 150:6",
+  "Proverbs 1:7", "Proverbs 4:23", "Proverbs 10:4", "Proverbs 11:25", "Proverbs 12:25", "Proverbs 13:4",
+  "Proverbs 14:23", "Proverbs 15:1", "Proverbs 16:24", "Proverbs 17:17", "Proverbs 17:22", "Proverbs 19:21",
+  "Proverbs 21:5", "Proverbs 22:6", "Proverbs 27:17", "Proverbs 31:25", "Ecclesiastes 4:9-10",
+  "Ecclesiastes 9:10", "Isaiah 9:6", "Isaiah 12:2", "Isaiah 30:15", "Isaiah 40:8", "Isaiah 40:29",
+  "Isaiah 43:2", "Isaiah 43:19", "Isaiah 54:10", "Isaiah 55:8-9", "Isaiah 58:11", "Jeremiah 17:7-8",
+  "Jeremiah 33:3", "Zephaniah 3:17", "Nahum 1:7", "Habakkuk 3:17-18", "Joshua 24:15", "Numbers 6:24-26",
+  "Exodus 14:14", "Deuteronomy 7:9", "Deuteronomy 6:5", "1 Samuel 16:7", "1 Chronicles 16:11",
+  "1 Chronicles 16:34", "2 Chronicles 7:14", "Nehemiah 8:10", "Job 19:25", "Ruth 1:16", "Genesis 1:1",
+  "Genesis 50:20", "Matthew 6:26", "Matthew 19:26", "Matthew 25:21", "Mark 9:23", "Mark 10:45", "Mark 11:24",
+  "Luke 1:37", "Luke 6:31", "Luke 6:38", "Luke 12:34", "Acts 1:8", "Acts 20:35", "Romans 1:16",
+  "Romans 5:3-4", "Romans 8:1", "Romans 8:31", "Romans 8:38-39", "Romans 12:18", "Romans 13:8",
+  "1 Corinthians 15:58", "1 Corinthians 16:13-14", "Galatians 2:20",
+];
+const KJV_FALLBACK = [
+  "And whatsoever ye do, do it heartily, as to the Lord, and not unto men. (Colossians 3:23 KJV)",
+  "Be strong and of a good courage; be not afraid, neither be thou dismayed: for the LORD thy God is with thee whithersoever thou goest. (Joshua 1:9 KJV)",
+  "This is the day which the LORD hath made; we will rejoice and be glad in it. (Psalm 118:24 KJV)",
+  "Be not forgetful to entertain strangers: for thereby some have entertained angels unawares. (Hebrews 13:2 KJV)",
+  "Except the LORD build the house, they labour in vain that build it. (Psalm 127:1 KJV)",
+];
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+
+async function verse() {
+  const key = process.env.ESV_API_KEY;
+  if (key) {
+    const ref = pick(VERSE_REFS);
+    try {
+      const q = new URLSearchParams({
+        q: ref, "include-passage-references": "false", "include-verse-numbers": "false",
+        "include-first-verse-numbers": "false", "include-footnotes": "false", "include-headings": "false",
+        "include-short-copyright": "false", "include-passage-horizontal-lines": "false", "include-heading-horizontal-lines": "false",
+      });
+      const r = await fetch("https://api.esv.org/v3/passage/text/?" + q, {
+        headers: { Authorization: "Token " + key }, signal: AbortSignal.timeout(3000),
+      });
+      if (r.ok) {
+        const d = await r.json();
+        const text = String((d.passages || [])[0] || "").replace(/\s+/g, " ").trim();
+        if (text) return `${text.slice(0, 600)} (${ref} ESV)`;
+      }
+    } catch (e) {
+      console.error("ESV fetch failed", e && e.message);
+    }
+  }
+  return pick(KJV_FALLBACK);
+}
+
 // Hot tub supplies go to Ethan, not Molly (she doesn't order them).
 const HOT_TUB_RE = /hot\s*-?\s*tub|hottub|\bspa\b|chlorine|bromine|\bshock\b|test strips?|\bph\b|alkalinity|defoamer|tub (filter|cover)/i;
 
-// Routing: repairs -> Ethan; hot tub supplies -> Ethan; all other supplies -> Molly (with hype).
+// Routing: repairs -> Ethan; hot tub supplies -> Ethan (with a verse); all other supplies -> Molly (with hype).
 // "who" picks the route in the Make scenario; the actual phone numbers live only there.
 async function alertTicket(t, prop) {
   const hook = process.env.OPS_ALERT_WEBHOOK;
@@ -259,7 +333,8 @@ async function alertTicket(t, prop) {
   parts.push(t.kind === "repair" ? "Details: thepineanddandy.com/ops/" : "Mark it ordered at thepineanddandy.com/ops/");
   let message = parts.join(" ");
   // Literal \n sequences become line breaks once Make embeds this in the JSON body.
-  if (!toEthan) message += "\\n\\n" + smsSafe(HYPE[Math.floor(Math.random() * HYPE.length)]);
+  const closer = toEthan ? await verse() : pick(HYPE);
+  message += "\\n\\n" + smsSafe(closer);
   try {
     await fetch(hook, {
       method: "POST",
