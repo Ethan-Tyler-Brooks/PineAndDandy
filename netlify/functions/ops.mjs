@@ -79,6 +79,7 @@ export default async (req) => {
       doneAt: null,
     };
     await s.setJSON("tickets/" + id, ticket);
+    if (ticket.kind === "supply") await alertMolly(ticket, prop);
     return json({ ok: true, id, createdAt: now });
   }
 
@@ -208,6 +209,54 @@ export default async (req) => {
 
   return json({ error: "no such route", route }, 404);
 };
+
+// ---------- supply alert text to Molly ----------
+// Posts to a Make webhook (URL in Netlify env OPS_ALERT_WEBHOOK, never in this public repo).
+// The Make scenario sends via Quo from the cabin line to Molly's number, which is fixed there.
+const HYPE = [
+  "You are the CEO of clean sheets and the Queen of Up North. 👑",
+  "Somewhere a paper towel roll just whispered your name. Legend.",
+  "Hospitality icon. Supply-chain goddess. Probably also a great parallel parker. 🚗",
+  "Five-star reviews don't write themselves. Oh wait, yours basically do. ⭐⭐⭐⭐⭐",
+  "Fun fact: 100% of cabins are happier when you're in charge. Science. 🔬",
+  "You + a shopping cart = unstoppable. Go get 'em, tiger. 🐯",
+  "The loons on the lake are cheering for you right now. Probably. 🦆",
+  "Hot tub chemicals fear you. Dust bunnies flee. You're that girl.",
+  "If being awesome were a supply, we'd never run out. Because of you. 💅",
+  "Molly Brooks: wife, mom, mogul, restock royalty. Ethan is a lucky dude.",
+  "Breaking news: local woman too amazing, cabins report record happiness. 📰",
+  "This text was sent with 0 cringe. (Lie. Maximum cringe. Love you.) 😘",
+  "You're the reason the toilet paper never runs out and the vibes never stop. 🧻✨",
+  "Pine & Dandy runs on coffee, firewood, and you. Mostly you. ☕🪵",
+  "Rate your day: 10/10, would host again. Keep crushing it! 💪",
+  "Roses are red, the cabin's a gem, you order the stuff, and we all say amen. 🌹",
+];
+const smsSafe = (v) => String(v || "").replace(/[\\"]/g, "'").replace(/[\r\n\t]+/g, " ").replace(/[\u0000-\u001f]/g, "").trim();
+
+async function alertMolly(t, prop) {
+  const hook = process.env.OPS_ALERT_WEBHOOK;
+  if (!hook) return;
+  const urgent = t.urgency === "urgent" ? "URGENT " : "";
+  const parts = [
+    `${urgent}Supply alert 🛒 ${smsSafe(t.submittedBy)} says ${smsSafe(prop.name)} needs: ${smsSafe(t.item)}${t.qty ? " (" + smsSafe(t.qty) + ")" : ""}.`,
+  ];
+  if (t.location) parts.push(`Where: ${smsSafe(t.location)}.`);
+  if (t.notes) parts.push(`Note: ${smsSafe(t.notes).slice(0, 300)}`);
+  parts.push("Mark it ordered at thepineanddandy.com/ops/");
+  const hype = HYPE[Math.floor(Math.random() * HYPE.length)];
+  // Literal \n sequences become line breaks once Make embeds this in the JSON body.
+  const message = parts.join(" ") + "\\n\\n" + smsSafe(hype);
+  try {
+    await fetch(hook, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ message, ticket: t.id }),
+      signal: AbortSignal.timeout(5000),
+    });
+  } catch (e) {
+    console.error("supply alert failed", e && e.message);
+  }
+}
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 async function handleMaint(b, s, { allowDelete }) {
